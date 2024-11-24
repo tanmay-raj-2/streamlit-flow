@@ -5,6 +5,10 @@ import React, { useEffect, useState } from "react";
 import { Handle } from "reactflow";
 import { Streamlit, withStreamlitConnection } from "streamlit-component-lib";
 
+const FETCH_IMAGE_API_URL = process.env.REACT_APP_FETCH_IMAGE_API_URL;
+const FETCH_FILTER_API_URL = process.env.REACT_APP_FETCH_FILTER_API_URL;
+const BEARER_TOKEN = process.env.REACT_APP_BEARER_TOKEN;
+
 const ImageFetchNode = ({ id, data }) => {
 	const [inputId, setInputId] = useState("");
 	const [imageSrc, setImageSrc] = useState(null); // For image display
@@ -50,9 +54,9 @@ const ImageFetchNode = ({ id, data }) => {
 			};
 
 			// Replace this URL with your actual API endpoint
-			const imageResponse = await axios.post(``, img_req_data, {
+			const imageResponse = await axios.post(`${FETCH_IMAGE_API_URL}`, img_req_data, {
 				headers: {
-					Authorization: `Bearer `,
+					Authorization: `Bearer ${BEARER_TOKEN}`,
 					"Content-Type": "application/json",
 				},
 				responseType: "blob",
@@ -85,9 +89,9 @@ const ImageFetchNode = ({ id, data }) => {
 			}
 
 			// Fetch the JSON data for filters
-			const filtersResponse = await axios.post(``, filter_req_data, {
+			const filtersResponse = await axios.post(`${FETCH_FILTER_API_URL}`, filter_req_data, {
 				headers: {
-					Authorization: `Bearer `,
+					Authorization: `Bearer ${BEARER_TOKEN}`,
 					"Content-Type": "application/json",
 				},
 				responseType: "json",
