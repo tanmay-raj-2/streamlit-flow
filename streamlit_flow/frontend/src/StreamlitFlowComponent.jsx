@@ -222,8 +222,16 @@ const StreamlitFlowComponent = (props) => {
 			},
 			edges
 		);
+		const sourceNode = nodes.find(node => node.id === params.source);
+		const targetNodeIdx = nodes.findIndex(node => node.id === params.target);
+		const newNodes = nodes;
+		if ('filters' in sourceNode.data) {
+			newNodes[targetNodeIdx].data['filters'] = sourceNode.data['filters'];
+		}
+		setNodes(newNodes);
 		setEdges(newEdges);
-		handleDataReturnToStreamlit(nodes, newEdges, newEdgeId);
+
+		handleDataReturnToStreamlit(newNodes, newEdges, newEdgeId);
 	};
 
 	const handleNodeDragStop = (event, node) => {

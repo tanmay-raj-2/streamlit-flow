@@ -118,6 +118,7 @@ const CreateNodeModal = ({show, handleClose, nodes, edges, theme, setPaneContext
                             <option value="default">Default</option>
                             <option value="input">Input</option>
                             <option value="output">Output</option>
+                            <option value="imageFetch">Image Fetch</option>
                         </Form.Select>
                     </FloatingLabel>
                 </Col>
