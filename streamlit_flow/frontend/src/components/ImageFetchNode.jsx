@@ -3,13 +3,13 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Handle } from "reactflow";
-import { Streamlit, withStreamlitConnection } from "streamlit-component-lib";
+import { withStreamlitConnection } from "streamlit-component-lib";
 
 const FETCH_IMAGE_API_URL = process.env.REACT_APP_FETCH_IMAGE_API_URL;
 const FETCH_FILTER_API_URL = process.env.REACT_APP_FETCH_FILTER_API_URL;
 const BEARER_TOKEN = process.env.REACT_APP_BEARER_TOKEN;
 
-const ImageFetchNode = ({ id, data }) => {
+const ImageFetchNode = (props) => {
 	const [inputId, setInputId] = useState("");
 	const [imageSrc, setImageSrc] = useState(null); // For image display
 	const [metadataName, setMetadataName] = useState(""); // For node heading
@@ -75,14 +75,6 @@ const ImageFetchNode = ({ id, data }) => {
 				const imageURL = URL.createObjectURL(imageBlob);
 				setImageSrc(imageURL);
 
-				// Optionally, send the image data back to Streamlit
-
-				reader.onloadend = () => {
-					Streamlit.setComponentValue({
-						nodeId: id,
-						imageData: reader.result, // base64 encoded string
-					});
-				};
 				reader.readAsDataURL(imageBlob);
 			} else {
 				setError("Received data is not an image.");
@@ -138,13 +130,6 @@ const ImageFetchNode = ({ id, data }) => {
 				});
 				setSelectedFilters(initialSelected);
 
-				// Send the metadata and initial filters back to Streamlit
-				Streamlit.setComponentValue({
-					nodeId: id,
-					imageData: reader.result || null, // From the image fetch
-					metadataName: metadata,
-					filters: initialSelected,
-				});
 			}
 		} catch (err) {
 			console.error(err);
@@ -161,14 +146,6 @@ const ImageFetchNode = ({ id, data }) => {
 			[filterName]: selectedValue,
 		};
 		setSelectedFilters(updatedFilters);
-
-		// Optionally, send the updated filter selections back to Streamlit
-		Streamlit.setComponentValue({
-			nodeId: id,
-			imageData: imageSrc ? imageSrc : null,
-			metadataName: metadataName,
-			filters: updatedFilters,
-		});
 	};
 
 	return (
