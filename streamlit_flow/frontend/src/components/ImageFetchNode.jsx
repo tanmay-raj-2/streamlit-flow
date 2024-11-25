@@ -9,7 +9,8 @@ const FETCH_IMAGE_API_URL = process.env.REACT_APP_FETCH_IMAGE_API_URL;
 const FETCH_FILTER_API_URL = process.env.REACT_APP_FETCH_FILTER_API_URL;
 const BEARER_TOKEN = process.env.REACT_APP_BEARER_TOKEN;
 
-const ImageFetchNode = (props) => {
+const ImageFetchNode = ({ args }) => {
+	console.log(args)
 	const [inputId, setInputId] = useState("");
 	const [imageSrc, setImageSrc] = useState(null); // For image display
 	const [metadataName, setMetadataName] = useState(""); // For node heading
