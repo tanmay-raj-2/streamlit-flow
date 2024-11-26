@@ -9,7 +9,7 @@ import {
 	init,
 } from "@thoughtspot/visual-embed-sdk/react";
 
-const TS_URL = process.env.TS_URL;
+const TS_URL = process.env.REACT_APP_TS_URL;
 
 const registerAuthEvent = (aEE, { name }) => {
 	aEE.on(AuthStatus.SUCCESS, () => {

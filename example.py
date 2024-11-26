@@ -1,14 +1,23 @@
 # example.py
+import os
 import random
 from uuid import uuid4
 
 import requests
 import streamlit as st
+from dotenv import load_dotenv
 
 from streamlit_flow import streamlit_flow
 from streamlit_flow.elements import StreamlitFlowEdge, StreamlitFlowNode
 from streamlit_flow.layouts import RadialLayout, TreeLayout
 from streamlit_flow.state import StreamlitFlowState
+
+# Load .env file
+load_dotenv("./streamlit_flow/frontend/.env.local")
+lb_api_url = os.getenv("LB_FETCH_API_URL")
+bearer_token = os.getenv("BEARER_TOKEN")
+
+print(f"lb api url {lb_api_url}")
 
 st.set_page_config("Myth demo", layout="wide")
 st.title("MYTh demo")
@@ -29,13 +38,10 @@ if st.button("Set Liveboard"):
         st.session_state.lb_data = None
     else:
         try:
-            # Replace the URL below with your actual API endpoint
-            lb_api_url = ""
-
             headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": "",
+                "Authorization": f"Bearer {bearer_token}",
             }
 
             req_data = {
