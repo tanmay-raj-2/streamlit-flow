@@ -48,7 +48,7 @@ if st.button("Set Liveboard"):
                 "metadata_identifier": lb_id,
                 "data_format": "FULL",
                 "record_offset": 0,
-                "record_size": 0,
+                "record_size": 100,
             }
 
             response = requests.post(lb_api_url, headers=headers, json=req_data)
@@ -74,7 +74,7 @@ if st.session_state.api_error:
 
 if st.session_state.lb_data:
     st.subheader(f"Liveboard - {st.session_state.lb_data['metadata_name']}")
-    # st.json(st.session_state.lb_data)
+    st.json(st.session_state.lb_data)
 
 if "curr_state" not in st.session_state:
     nodes = [
@@ -117,7 +117,7 @@ if st.button("Add Node"):
     st.session_state.curr_state.nodes.append(new_node)
     st.rerun()
 
-print(st.session_state.curr_state.nodes[-1])
+# print(st.session_state.curr_state.nodes[-1])
 
 # with col1:
 #     if st.button("Add Node"):
@@ -195,6 +195,7 @@ component_value = streamlit_flow(
     allow_new_edges=True,
     animate_new_edges=True,
     min_zoom=0.1,
+    lb_data=st.session_state.lb_data,
 )
 
 # Handle Component Value Returned from ImageFetchNode
