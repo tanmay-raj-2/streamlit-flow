@@ -33,6 +33,7 @@ import ImageFetchNode from "./components/ImageFetchNode"; // <-- Import the new 
 
 import createElkGraphLayout from "./layouts/ElkLayout";
 import VizNode from "./components/VizNode";
+import AnswerEmbedNode from "./components/AnswerEmbedNode";
 
 const StreamlitFlowComponent = (props) => {
 	const nodeTypes = useMemo(
@@ -41,7 +42,8 @@ const StreamlitFlowComponent = (props) => {
 			output: MarkdownOutputNode,
 			default: MarkdownDefaultNode,
 			imageFetch: ImageFetchNode,
-			vizNode: VizNode
+			vizNode: VizNode,
+			answer: AnswerEmbedNode
 		}),
 		[]
 	);
@@ -224,10 +226,17 @@ const StreamlitFlowComponent = (props) => {
 		);
 		const sourceNode = nodes.find(node => node.id === params.source);
 		const targetNodeIdx = nodes.findIndex(node => node.id === params.target);
+		console.log("adding edge");
 		const newNodes = nodes;
+		console.log(newNodes);
 		if ('filters' in sourceNode.data) {
-			newNodes[targetNodeIdx].data['filters'] = sourceNode.data['filters'];
+			newNodes[targetNodeIdx].data['filters'] = [
+				...newNodes[targetNodeIdx].data['filters'],
+				...sourceNode['data']['filters']
+			]
+			console.log("has filter");
 		}
+		console.log(newNodes);
 		setNodes(newNodes);
 		setEdges(newEdges);
 
