@@ -25,9 +25,9 @@ const ImageFetchNode = (props) => {
 	const args = props.args;
 	console.log(args);
 	const lbData = props.data?.lbData ?? "";
-	// const vizId = "43676666-794f-42d7-aa74-586dea6b69d9";
 	const vizId = props.data?.vizId ?? "";
-	const [inputId, setInputId] = useState(vizId);
+	const lbId = lbData['metadata_id'];
+	const [inputId, setInputId] = useState(lbId);
 	const [metadataName, setMetadataName] = useState(""); // For node heading
 	const [filters, setFilters] = useState([]); // Array of filter objects { name: string, values: array }
 	const [selectedFilters, setSelectedFilters] = useState({}); // { filterName: selectedValue }
