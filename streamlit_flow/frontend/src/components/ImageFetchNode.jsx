@@ -20,12 +20,14 @@ const filterOptionsMap = {
 	// Add more mappings as needed
 };
 
-const ImageFetchNode = ({ args }) => {
+const ImageFetchNode = (props) => {
+	console.log(props);
+	const args = props.args;
 	console.log(args);
-	// const vizId = args.nodes[args.nodes.length - 1].data['vizId'];
-	const lbData = args.lbData;
-	const vizId = "43676666-794f-42d7-aa74-586dea6b69d9";
-	const [inputId, setInputId] = useState("");
+	const lbData = props.data?.lbData ?? "";
+	// const vizId = "43676666-794f-42d7-aa74-586dea6b69d9";
+	const vizId = props.data?.vizId ?? "";
+	const [inputId, setInputId] = useState(vizId);
 	const [metadataName, setMetadataName] = useState(""); // For node heading
 	const [filters, setFilters] = useState([]); // Array of filter objects { name: string, values: array }
 	const [selectedFilters, setSelectedFilters] = useState({}); // { filterName: selectedValue }
@@ -272,9 +274,4 @@ const ImageFetchNode = ({ args }) => {
 	);
 };
 
-ImageFetchNode.propTypes = {
-	id: PropTypes.string.isRequired,
-	data: PropTypes.object.isRequired,
-};
-
-export default withStreamlitConnection(ImageFetchNode);
+export default ImageFetchNode;

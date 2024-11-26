@@ -46,6 +46,9 @@ const StreamlitFlowComponent = (props) => {
 		[]
 	);
 
+	const visualizationMap = {};
+	console.log(props.args);
+
 	const [viewFitAfterLayout, setViewFitAfterLayout] = useState(null);
 	const [nodes, setNodes, onNodesChange] = useNodesState(props.args.nodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(props.args.edges);
@@ -294,6 +297,7 @@ const StreamlitFlowComponent = (props) => {
 						}
 						setLayoutCalculated={setLayoutCalculated}
 						theme={props.theme}
+						lbData={props.args.lbData}
 					/>
 				)}
 				{nodeContextMenu && (
