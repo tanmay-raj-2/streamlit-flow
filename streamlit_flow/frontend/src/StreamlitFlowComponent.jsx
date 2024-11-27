@@ -33,6 +33,7 @@ import ImageFetchNode from "./components/ImageFetchNode"; // <-- Import the new 
 
 import createElkGraphLayout from "./layouts/ElkLayout";
 import VizNode from "./components/VizNode";
+import AnswerEmbedNode from "./components/AnswerEmbedNode";
 
 const StreamlitFlowComponent = (props) => {
 	const nodeTypes = useMemo(
@@ -41,7 +42,8 @@ const StreamlitFlowComponent = (props) => {
 			output: MarkdownOutputNode,
 			default: MarkdownDefaultNode,
 			imageFetch: ImageFetchNode,
-			vizNode: VizNode
+			vizNode: VizNode,
+			answer: AnswerEmbedNode
 		}),
 		[]
 	);
@@ -214,28 +216,12 @@ const StreamlitFlowComponent = (props) => {
 			handleDataReturnToStreamlit(nodes, edges, edge.id);
 	};
 
-	const handleConnect = (params) => {
-		const newEdgeId = `st-flow-edge_${params.source}-${params.target}`;
-		const newEdges = addEdge(
-			{
-				...params,
-				animated: props.args["animateNewEdges"],
-				labelShowBg: false,
-				id: newEdgeId,
-			},
-			edges
-		);
-		const sourceNode = nodes.find(node => node.id === params.source);
-		const targetNodeIdx = nodes.findIndex(node => node.id === params.target);
-		const newNodes = nodes;
-		if ('filters' in sourceNode.data) {
-			newNodes[targetNodeIdx].data['filters'] = sourceNode.data['filters'];
-		}
-		setNodes(newNodes);
-		setEdges(newEdges);
-
-		handleDataReturnToStreamlit(newNodes, newEdges, newEdgeId);
-	};
+  const handleConnect = (params) => {
+      const newEdgeId = `st-flow-edge_${params.source}-${params.target}`; 
+      const newEdges = addEdge({...params, animated:props.args["animateNewEdges"], labelShowBg:false, id: newEdgeId}, edges);
+      setEdges(newEdges);
+      handleDataReturnToStreamlit(nodes, newEdges, newEdgeId);
+  }
 
 	const handleNodeDragStop = (event, node) => {
 		const updatedNodes = nodes.map((n) => {

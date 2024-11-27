@@ -9,10 +9,6 @@ import { Handle } from "reactflow";
 import { withStreamlitConnection } from "streamlit-component-lib";
 import getLbVizListFromLbData from "../utils/lb_utils";
 
-const FETCH_IMAGE_API_URL = process.env.REACT_APP_FETCH_IMAGE_API_URL;
-const FETCH_FILTER_API_URL = process.env.REACT_APP_FETCH_FILTER_API_URL;
-const BEARER_TOKEN = process.env.REACT_APP_BEARER_TOKEN;
-
 // Define the mapping for secondary dropdowns based on filter names
 const filterOptionsMap = {
 	ATTRIBUTE_COL: ["IN", "NOT IN"],

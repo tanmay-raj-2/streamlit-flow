@@ -1,3 +1,4 @@
+import "@xyflow/react/dist/style.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import StreamlitFlowApp from "./StreamlitFlowApp";
