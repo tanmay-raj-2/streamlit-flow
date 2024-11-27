@@ -33,7 +33,7 @@ class StreamlitFlowNode:
         id: str,
         pos: Tuple[float, float],
         data: Dict[str, any],
-        node_type: Literal["default", "input", "output", "imageFetch", "vizNode"] = "default",
+        node_type: Literal["default", "input", "output", "imageFetch", "vizNode", "answer"] = "default",
         source_position: Literal["bottom", "top", "left", "right"] = "bottom",
         target_position: Literal["bottom", "top", "left", "right"] = "top",
         hidden: bool = False,
@@ -112,7 +112,8 @@ class StreamlitFlowNode:
             "input",
             "output",
             "imageFetch",
-            "vizNode"
+            "vizNode",
+            "answer"
         ], f"Node type must be one of ['default', 'input', 'output']. Got {self.type}"
         assert (
             self.source_position in ["top", "bottom", "left", "right"]
