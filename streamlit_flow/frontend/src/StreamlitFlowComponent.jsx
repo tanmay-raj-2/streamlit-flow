@@ -216,35 +216,12 @@ const StreamlitFlowComponent = (props) => {
 			handleDataReturnToStreamlit(nodes, edges, edge.id);
 	};
 
-	const handleConnect = (params) => {
-		const newEdgeId = `st-flow-edge_${params.source}-${params.target}`;
-		const newEdges = addEdge(
-			{
-				...params,
-				animated: props.args["animateNewEdges"],
-				labelShowBg: false,
-				id: newEdgeId,
-			},
-			edges
-		);
-		const sourceNode = nodes.find(node => node.id === params.source);
-		const targetNodeIdx = nodes.findIndex(node => node.id === params.target);
-		console.log("adding edge");
-		const newNodes = nodes;
-		console.log(newNodes);
-		if ('filters' in sourceNode.data) {
-			newNodes[targetNodeIdx].data['filters'] = [
-				...newNodes[targetNodeIdx].data['filters'],
-				...sourceNode['data']['filters']
-			]
-			console.log("has filter");
-		}
-		console.log(newNodes);
-		setNodes(newNodes);
-		setEdges(newEdges);
-
-		handleDataReturnToStreamlit(newNodes, newEdges, newEdgeId);
-	};
+  const handleConnect = (params) => {
+      const newEdgeId = `st-flow-edge_${params.source}-${params.target}`; 
+      const newEdges = addEdge({...params, animated:props.args["animateNewEdges"], labelShowBg:false, id: newEdgeId}, edges);
+      setEdges(newEdges);
+      handleDataReturnToStreamlit(nodes, newEdges, newEdgeId);
+  }
 
 	const handleNodeDragStop = (event, node) => {
 		const updatedNodes = nodes.map((n) => {
