@@ -18,16 +18,6 @@ const AnswerEmbedNode = ({ data }) => {
 		operator: RuntimeFilterOp.IN,
 		values: values
 	}))
-	// const runTimeFileters = [{
-	// 	columnName: 'city',
-	// 	operator: RuntimeFilterOp.IN,
-	// 	values: filters['city']
-	// }]
-
-	console.log(vizId);
-	if (vizId == "ff301c4b-c3cf-4143-8cce-fc374b0a4c8e") {
-		console.log(runTimeFileters);
-	}
 
 	const embedRef = useEmbedRef();
 	return (
