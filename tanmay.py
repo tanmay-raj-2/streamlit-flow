@@ -86,8 +86,6 @@ visualization_map = {item["visualization_name"]: item["visualization_id"] for it
 # Select a visualization using its name
 selected_visualization_name = st.selectbox("Select a visualization", options=list(visualization_map.keys()))
 
-# Get the selected data based on the selected visualization name
-selected_data = next((item for item in st.session_state.lb_data['contents'] if item["visualization_id"] == visualization_map[selected_visualization_name]), None)
 
 # Extract 'name' from each node's data
 node_names = [node.data["name"] for node in st.session_state.curr_state.nodes]
@@ -96,24 +94,29 @@ node_names = [node.data["name"] for node in st.session_state.curr_state.nodes]
 options = ["None"] + node_names
 selected_parent = st.selectbox("Select a parent node:", options=options, index=0)
 
-# Provide feedback to the user about their selection
-st.write("Add filter!")
-
-#  Assuming you have a function to extract unique values for a given column
-def get_unique_values(content, column_name):
-    # Simulates extracting unique values for a column from the given content data rows
-    return list(set(row[column_name] for row in content.get('data_rows', [])))
-
 filters = {}
-if selected_data:
-    # Extract column names for the selected visualization
-    column_names = selected_data["column_names"]
-    
-    # Display checkboxes for each column name and track selections
-    for column in column_names:
-        if st.checkbox(column, key=f"{selected_visualization_name}_{column}"):
-            unique_values = get_unique_values(selected_data, column)
-            filters[column] = unique_values
+
+if selected_parent != "None":
+    # Get the selected data based on the selected visualization name
+    selected_data = next((item for item in st.session_state.lb_data['contents'] if item["visualization_id"] == visualization_map[selected_parent]), None)
+
+    # Provide feedback to the user about their selection
+    st.write("Add filter!")
+
+    #  Assuming you have a function to extract unique values for a given column
+    def get_unique_values(content, column_name):
+        # Simulates extracting unique values for a column from the given content data rows
+        return list(set(row[column_name] for row in content.get('data_rows', [])))
+
+    if selected_data:
+        # Extract column names for the selected visualization
+        column_names = selected_data["column_names"]
+        
+        # Display checkboxes for each column name and track selections
+        for column in column_names:
+            if st.checkbox(column, key=f"{selected_visualization_name}_{column}"):
+                unique_values = get_unique_values(selected_data, column)
+                filters[column] = unique_values
 
 if st.button("Add Node"):
     print("Adding node!")
@@ -170,48 +173,38 @@ st.session_state.curr_state = streamlit_flow(
     lb_data=st.session_state.lb_data,
 )
 
-print(st.session_state.curr_state.nodes)
-
-
-if "node_summary" not in st.session_state:
-    st.session_state.node_summary = []
-
-for idx, summary in enumerate(st.session_state.node_summary):
-    st.write(f"Summary for {st.session_state.curr_state.nodes[idx + 1].data['name']}: {summary}")
-
+# print(st.session_state.curr_state.nodes)
 
 if st.button("Get summary"):
-    # Iterate through nodes and make API calls
-    api_responses = []
     node_summary = []
     filters = []
-    
+
     for node in st.session_state.curr_state.nodes[1:]:
         response = fetch_answer_png(node, bearer_token, answer_fetch_url)
         if response:
-            api_responses.append(response)
             b64_encoded_content = base64.b64encode(response).decode('utf-8')
             summary = get_image_summary(b64_encoded_content, node.data['filters'], openai_api_key)
             print(f'{node.data["name"]}: {summary}')
             node_summary.append(summary)
             filters.append(node.data['filters'])
 
-    print(node_summary)
-
+    print("----fetching path summary-----")
     path_summary = get_path_summary(node_summary, filters, openai_api_key)
-    print("----path summary-----")
     print(path_summary)
+    print("----fetched path summary-----")
+    # print(path_summary)
+    # st.session_state.path_summary = path_summary
 
-    st.session_state.node_summary = node_summary  # Store node summaries
+    # st.session_state.node_summary = node_summary  # Store node summaries
 
-    # filename = "analysis_summary.txt"  # Specify your desired filename
-    # with open(filename, "w") as file:
-    #     for summary in node_summary:
-    #         file.
-    #     file.write(path_summary)
+# if st.button("Get summary"):
+#     print("----fetching path summary-----")
+#     st.session_state.path_summary = "test"
+#     print("----fetched path summary-----")
+#     print(st.session_state.path_summary)
 
-    # Confirmation message
-    # print(f"Summary written to {filename}.")
-
-    # Optionally, you can add a message to indicate summaries have been fetched
-    st.success("Summaries fetched successfully!")
+# if st.session_state.path_summary:
+#     print('-----------------abc--')
+#     st.write(", ".join(st.session_state.node_summary))
+#     st.write(st.session_state.path_summary)
+#     print('---xyz------------abc--')

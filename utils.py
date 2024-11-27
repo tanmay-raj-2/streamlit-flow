@@ -31,9 +31,9 @@ def get_image_summary(base64_image, filters, api_key):
             },
             {
             "type": "image_url",
-            "image_url": {
-                "url":  f"data:image/jpeg;base64,{base64_image}"
-            },
+                "image_url": {
+                    "url":  f"data:image/jpeg;base64,{base64_image}"
+                },
             },
         ],
         }
@@ -82,6 +82,11 @@ def get_path_summary(node_summary, filters, api_key):
 
 
 def fetch_answer_png(node, bearer_token, answer_fetch_url):
+    runtime_filters = {}
+    for idx, col in enumerate(node.data['filters']):
+        runtime_filters[f'col{idx + 1}'] = col
+        runtime_filters[f'op{idx + 1}'] = "IN"
+        runtime_filters[f'val{idx + 1}'] = node.data['filters'][col]
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {bearer_token}',
@@ -89,7 +94,8 @@ def fetch_answer_png(node, bearer_token, answer_fetch_url):
     data = {
         "metadata_identifier": node.data['lbId'],
         "file_format": "PNG",
-        "visualization_identifiers": [node.data['vizId']]
+        "visualization_identifiers": [node.data['vizId']],
+        "runtime_filter": runtime_filters
     }
     response = requests.post(answer_fetch_url, headers=headers, json=data)
 
