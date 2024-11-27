@@ -41,25 +41,25 @@ const AnswerEmbedNode = ({ data }) => {
 			}}
 		>
 			<Handle type="target" position="top" />
-                <div className="lb-embed-container">
-					<LiveboardEmbed
-						ref={embedRef}
-						dataPanelV2={false}
-						additionalFlags={{
-							overrideConsoleLogs: false,
-						}}
-						liveboardId={lbId}
-						vizId={vizId}
-						hideSearchBar={true}
-						hideDataSources={true}
-						frameParams={{
-							height: "100%",
-							weight: "100%",
-						}}
-						className="lb-embed-body"
-						runtimeFilters={runTimeFileters}
-					/>
-                </div>
+        <div className="lb-embed-container">
+          <LiveboardEmbed
+            ref={embedRef}
+            dataPanelV2={false}
+            additionalFlags={{
+              overrideConsoleLogs: false,
+            }}
+            liveboardId={lbId}
+            vizId={vizId}
+            hideSearchBar={true}
+            hideDataSources={true}
+            frameParams={{
+              height: "100%",
+              weight: "100%",
+            }}
+            className="lb-embed-body"
+            runtimeFilters={runTimeFileters}
+          />
+        </div>
 			<Handle type="source" position="bottom" />
 		</div>
 	);

@@ -48,6 +48,9 @@ const StreamlitFlowComponent = (props) => {
 		[]
 	);
 
+	const visualizationMap = {};
+	console.log(props.args);
+
 	const [viewFitAfterLayout, setViewFitAfterLayout] = useState(null);
 	const [nodes, setNodes, onNodesChange] = useNodesState(props.args.nodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(props.args.edges);
@@ -213,12 +216,12 @@ const StreamlitFlowComponent = (props) => {
 			handleDataReturnToStreamlit(nodes, edges, edge.id);
 	};
 
-    const handleConnect = (params) => {
-        const newEdgeId = `st-flow-edge_${params.source}-${params.target}`; 
-        const newEdges = addEdge({...params, animated:props.args["animateNewEdges"], labelShowBg:false, id: newEdgeId}, edges);
-        setEdges(newEdges);
-        handleDataReturnToStreamlit(nodes, newEdges, newEdgeId);
-    }
+  const handleConnect = (params) => {
+      const newEdgeId = `st-flow-edge_${params.source}-${params.target}`; 
+      const newEdges = addEdge({...params, animated:props.args["animateNewEdges"], labelShowBg:false, id: newEdgeId}, edges);
+      setEdges(newEdges);
+      handleDataReturnToStreamlit(nodes, newEdges, newEdgeId);
+  }
 
 	const handleNodeDragStop = (event, node) => {
 		const updatedNodes = nodes.map((n) => {
@@ -280,6 +283,7 @@ const StreamlitFlowComponent = (props) => {
 						}
 						setLayoutCalculated={setLayoutCalculated}
 						theme={props.theme}
+						lbData={props.args.lbData}
 					/>
 				)}
 				{nodeContextMenu && (
