@@ -1,6 +1,7 @@
 # example.py
 import os
 import random
+import base64
 from uuid import uuid4
 
 import requests
@@ -9,23 +10,20 @@ from dotenv import load_dotenv
 
 from streamlit_flow import streamlit_flow
 from streamlit_flow.elements import StreamlitFlowEdge, StreamlitFlowNode
-from streamlit_flow.layouts import RadialLayout, TreeLayout
+from streamlit_flow.layouts import TreeLayout
 from streamlit_flow.state import StreamlitFlowState
+from utils import fetch_answer_png, get_image_summary, get_path_summary, merge_filters
 
 # Load .env file
 load_dotenv("./streamlit_flow/frontend/.env.local")
 lb_api_url = os.getenv("LB_FETCH_API_URL")
 bearer_token = os.getenv("BEARER_TOKEN")
 lb_id = os.getenv("LIVEBOARD_ID")
-
-print(f"lb api url {lb_api_url}")
+answer_fetch_url = os.getenv("ANSWER_FETCH_API_URL")
+openai_api_key = os.getenv("OPEN_AI_API_KEY")
 
 st.set_page_config("Myth demo", layout="wide")
 st.title("MYTh demo")
-
-# Create a text input for the user to enter an ID or query
-
-lb_name = ""
 
 if "lb_data" not in st.session_state:
     try:
@@ -74,10 +72,9 @@ if "curr_state" not in st.session_state:
         ),  # <-- Custom Node
     ]
     edges = []
-
     st.session_state.curr_state = StreamlitFlowState(nodes, edges)
 
-
+# ------ Show the all the inputs for add node -----------
 visualization_map = {
     item['visualization_name']: item['visualization_id'] for item in st.session_state.lb_data['contents']
 }
@@ -118,29 +115,12 @@ if selected_data:
             unique_values = get_unique_values(selected_data, column)
             filters[column] = unique_values
 
-def merge_filters(parent_filters, child_filters):
-    merged_filters = child_filters.copy()
-    
-    for parent_key, parent_values in parent_filters.items():
-        if parent_key in merged_filters:
-            # If key exists in both parent and child, merge unique values
-            merged_filters[parent_key] = list(set(merged_filters[parent_key] + parent_values))
-        else:
-            # If key only exists in parent, add it to child filters
-            merged_filters[parent_key] = parent_values
-    
-    return merged_filters
-
 if st.button("Add Node"):
-    print("adding ndoe")
-    print(filters)
-    print(selected_parent)
+    print("Adding node!")
     new_node_id = str(f"st-flow-node_{uuid4()}")
     if selected_parent != "None":
         # Find the parent node
-        print(st.session_state.curr_state.nodes)
         parent_node = next((node for node in st.session_state.curr_state.nodes if node.data['name'] == selected_parent), None)
-        print(parent_node)
         if parent_node:
             # Extract filters from the parent node
             parent_filters = parent_node.data.get('filters', {})
@@ -149,7 +129,7 @@ if st.button("Add Node"):
             filters = merge_filters(parent_filters, filters)
 
         new_edge = StreamlitFlowEdge(
-            "1-2",
+            f'{parent_node.id}->{new_node_id}',
             parent_node.id,
             new_node_id,
             animated=True,
@@ -157,8 +137,6 @@ if st.button("Add Node"):
             marker_end={"type": "arrow"},
         )
         st.session_state.curr_state.edges.append(new_edge)
-
-    print(filters)
 
     new_node = StreamlitFlowNode(
         new_node_id,
@@ -193,3 +171,47 @@ st.session_state.curr_state = streamlit_flow(
 )
 
 print(st.session_state.curr_state.nodes)
+
+
+if "node_summary" not in st.session_state:
+    st.session_state.node_summary = []
+
+for idx, summary in enumerate(st.session_state.node_summary):
+    st.write(f"Summary for {st.session_state.curr_state.nodes[idx + 1].data['name']}: {summary}")
+
+
+if st.button("Get summary"):
+    # Iterate through nodes and make API calls
+    api_responses = []
+    node_summary = []
+    filters = []
+    
+    for node in st.session_state.curr_state.nodes[1:]:
+        response = fetch_answer_png(node, bearer_token, answer_fetch_url)
+        if response:
+            api_responses.append(response)
+            b64_encoded_content = base64.b64encode(response).decode('utf-8')
+            summary = get_image_summary(b64_encoded_content, node.data['filters'], openai_api_key)
+            print(f'{node.data["name"]}: {summary}')
+            node_summary.append(summary)
+            filters.append(node.data['filters'])
+
+    print(node_summary)
+
+    path_summary = get_path_summary(node_summary, filters, openai_api_key)
+    print("----path summary-----")
+    print(path_summary)
+
+    st.session_state.node_summary = node_summary  # Store node summaries
+
+    # filename = "analysis_summary.txt"  # Specify your desired filename
+    # with open(filename, "w") as file:
+    #     for summary in node_summary:
+    #         file.
+    #     file.write(path_summary)
+
+    # Confirmation message
+    # print(f"Summary written to {filename}.")
+
+    # Optionally, you can add a message to indicate summaries have been fetched
+    st.success("Summaries fetched successfully!")
