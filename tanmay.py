@@ -173,6 +173,7 @@ st.session_state.curr_state = streamlit_flow(
     lb_data=st.session_state.lb_data,
 )
 
+
 # print(st.session_state.curr_state.nodes)
 
 if st.button("Get summary"):
@@ -208,3 +209,4 @@ if st.button("Get summary"):
 #     st.write(", ".join(st.session_state.node_summary))
 #     st.write(st.session_state.path_summary)
 #     print('---xyz------------abc--')
+
