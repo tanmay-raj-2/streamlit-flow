@@ -1,7 +1,9 @@
 import requests
 from openai import OpenAI
+import streamlit as st
 
 
+@st.cache_data(show_spinner=False)
 def get_image_summary(base64_image, filters, api_key):
     client = OpenAI(
         api_key=api_key,
@@ -43,6 +45,8 @@ def get_image_summary(base64_image, filters, api_key):
     print(response.choices[0])
     return response.choices[0].message.content
 
+
+@st.cache_data(show_spinner=False)
 def get_path_summary(node_summary, filters, api_key):
     prompt = "We did an analysis on our data with multiple viz. "
     for i in range(len(node_summary)):

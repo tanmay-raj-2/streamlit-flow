@@ -2,6 +2,7 @@
 import os
 import random
 import base64
+import time
 from uuid import uuid4
 
 import requests
@@ -68,7 +69,7 @@ if st.session_state.lb_data:
 if "curr_state" not in st.session_state:
     nodes = [
         StreamlitFlowNode(
-            "1", (0, 0), {"content": "Image Fetch Node", "name": "testing"}, "imageFetch", "right", "left"
+            "1", (0, 0), {"content": "Image Fetch Node", "name": "testing"}, "imageFetch", "right", "left", hidden=True
         ),  # <-- Custom Node
     ]
     edges = []
@@ -173,40 +174,44 @@ st.session_state.curr_state = streamlit_flow(
     lb_data=st.session_state.lb_data,
 )
 
+if "fetch_summary" not in st.session_state:
+    st.session_state.fetch_summary = False
 
-# print(st.session_state.curr_state.nodes)
+if "path_summary" not in st.session_state:
+    st.session_state.path_summary = None
 
 if st.button("Get summary"):
-    node_summary = []
-    filters = []
+    st.session_state.fetch_summary = True
 
-    for node in st.session_state.curr_state.nodes[1:]:
-        response = fetch_answer_png(node, bearer_token, answer_fetch_url)
-        if response:
-            b64_encoded_content = base64.b64encode(response).decode('utf-8')
-            summary = get_image_summary(b64_encoded_content, node.data['filters'], openai_api_key)
-            print(f'{node.data["name"]}: {summary}')
-            node_summary.append(summary)
-            filters.append(node.data['filters'])
 
-    print("----fetching path summary-----")
-    path_summary = get_path_summary(node_summary, filters, openai_api_key)
-    print(path_summary)
-    print("----fetched path summary-----")
-    # print(path_summary)
-    # st.session_state.path_summary = path_summary
+def stream_data(input):
+    for word in input.split(" "):
+        yield word + " "
+        time.sleep(0.02)
 
-    # st.session_state.node_summary = node_summary  # Store node summaries
+if st.session_state.fetch_summary:
+    path_summary = ""
+    if not st.session_state.path_summary:
+        with st.spinner('Generating summary...'):
+            st.session_state.make_api_call = False
+            node_summary = []
+            filters = []
 
-# if st.button("Get summary"):
-#     print("----fetching path summary-----")
-#     st.session_state.path_summary = "test"
-#     print("----fetched path summary-----")
-#     print(st.session_state.path_summary)
+            for node in st.session_state.curr_state.nodes[1:]:
+                response = fetch_answer_png(node, bearer_token, answer_fetch_url)
+                if response:
+                    b64_encoded_content = base64.b64encode(response).decode('utf-8')
+                    summary = get_image_summary(b64_encoded_content, node.data['filters'], openai_api_key)
+                    print(f'{node.data["name"]}: {summary}')
+                    node_summary.append(summary)
+                    filters.append(node.data['filters'])
 
-# if st.session_state.path_summary:
-#     print('-----------------abc--')
-#     st.write(", ".join(st.session_state.node_summary))
-#     st.write(st.session_state.path_summary)
-#     print('---xyz------------abc--')
+            print("----fetching path summary-----")
+            path_summary = get_path_summary(node_summary, filters, openai_api_key)
+            print("----fetched path summary-----")
+            print(path_summary)
+            print("----fetched path summary 123455-----")
+        st.session_state.path_summary = path_summary.replace('$', '\\$')
 
+    if st.session_state.path_summary:
+        st.write_stream(stream_data(st.session_state.path_summary))
