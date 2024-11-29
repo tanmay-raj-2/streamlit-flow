@@ -122,3 +122,20 @@ def merge_filters(parent_filters, child_filters):
             merged_filters[parent_key] = parent_values
     
     return merged_filters
+
+
+def get_lb_data(url, bearer_token, lb_id):
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {bearer_token}",
+    }
+
+    req_data = {
+        "metadata_identifier": lb_id,
+        "data_format": "FULL",
+        "record_offset": 0,
+        "record_size": 100,
+    }
+
+    return requests.post(url, headers=headers, json=req_data)
