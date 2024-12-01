@@ -1,8 +1,4 @@
-# example.py
-import os
-
 import streamlit as st
-from dotenv import load_dotenv
 
 from add_cca import find_most_changed_attributes
 from add_node import add_node_button
@@ -52,7 +48,7 @@ add_node_button()
 
 
 # ------ Logic to get the most changing attributes -----------
-# find_most_changed_attributes()
+find_most_changed_attributes()
 
 
 # Render the Flowchart
