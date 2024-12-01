@@ -46,6 +46,9 @@ if "curr_state" not in st.session_state:
 # ------ Logic to add nodes -----------
 add_node_button()
 
+print('--' * 20)
+print(st.session_state.curr_state.nodes)
+print('--' * 20)
 
 # ------ Logic to get the most changing attributes -----------
 find_most_changed_attributes()

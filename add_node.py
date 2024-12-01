@@ -31,16 +31,15 @@ def add_node_button():
     # Add a "None" or similar option for no selection
     options = node_names
     selected_parent = st.multiselect("Select a parent node:", options=options)
-    print(selected_parent)
 
     filters = {}
+
+    if len(selected_parent) > 0:
+        st.write(f"Add filters!")
 
     for parent in selected_parent:
         # Get the selected data based on the selected visualization name
         selected_data = next((item for item in st.session_state.lb_data['contents'] if item["visualization_id"] == visualization_map_all[parent]), None)
-
-        # Provide feedback to the user about their selection
-        st.write(f"Add filter using {parent}!")
 
         #  Assuming you have a function to extract unique values for a given column
         def get_unique_values(content, column_name):
@@ -50,12 +49,20 @@ def add_node_button():
         if selected_data:
             # Extract column names for the selected visualization
             column_names = selected_data["column_names"]
-            
+
             # Display checkboxes for each column name and track selections
             for column in column_names:
-                if st.checkbox(column, key=f"{selected_visualization_name}_{column}_{parent}"):
-                    unique_values = get_unique_values(selected_data, column)
-                    filters[column] = unique_values
+                if column == "Change":
+                    continue
+                container = st.container()
+                unique_values_in_col = get_unique_values(selected_data, column)
+                all = st.checkbox("Select all", key=f"{selected_visualization_name}_{column}_{parent}_checkbox")
+                selected_filters = []
+                if all:
+                    selected_filters = container.multiselect(f"Select filters on {column} column", options=unique_values_in_col, key=f"{selected_visualization_name}_{column}_{parent}_all", default=unique_values_in_col)
+                else:
+                    selected_filters = container.multiselect(f"Select filters on {column} column", options=unique_values_in_col, key=f"{selected_visualization_name}_{column}_{parent}")
+                filters[column] = selected_filters
 
     if st.button("Add Node"):
         print("Adding node!")
