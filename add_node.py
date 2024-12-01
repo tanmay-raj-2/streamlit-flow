@@ -11,20 +11,18 @@ load_dotenv("./streamlit_flow/frontend/.env.local")
 lb_id = os.getenv("LIVEBOARD_ID")
 
 def add_node_button():
-    visualization_map = {
-        item['visualization_name']: item['visualization_id'] for item in st.session_state.lb_data['contents']
-    }
-    visualization_ids = [item["visualization_id"] for item in st.session_state.lb_data['contents']]
-
     # Create a dropdown selectbox with the visualization names
-    visualization_map = {item["visualization_name"]: item["visualization_id"] for item in st.session_state.lb_data['contents']}
+    visualization_map = {
+        item["visualization_name"]: item["visualization_id"] 
+        for item in st.session_state.lb_data['contents'] 
+        if item["visualization_name"][:3] != "CCA"
+    } 
 
     # Select a visualization using its name
     selected_visualization_name = st.selectbox("Select a visualization", options=list(visualization_map.keys()))
 
-
     # Extract 'name' from each node's data
-    node_names = [node.data["name"] for node in st.session_state.curr_state.nodes]
+    node_names = [node.data["name"] for node in st.session_state.curr_state.nodes[1:]]
 
     # Add a "None" or similar option for no selection
     options = ["None"] + node_names

@@ -1,15 +1,8 @@
 import base64
-import os
 import time
-from dotenv import load_dotenv
 import streamlit as st
 
 from utils import fetch_answer_png, get_image_summary, get_path_summary
-
-load_dotenv("./streamlit_flow/frontend/.env.local")
-openai_api_key = os.getenv("OPEN_AI_API_KEY")
-bearer_token = os.getenv("BEARER_TOKEN")
-answer_fetch_url = os.getenv("ANSWER_FETCH_API_URL")
 
 def stream_data(input):
     for word in input.split(" "):
@@ -35,15 +28,15 @@ def generate_summary_button():
                 filters = []
 
                 for node in st.session_state.curr_state.nodes[1:]:
-                    response = fetch_answer_png(node, bearer_token, answer_fetch_url)
+                    response = fetch_answer_png(node)
                     if response:
                         b64_encoded_content = base64.b64encode(response).decode('utf-8')
-                        summary = get_image_summary(b64_encoded_content, node.data['filters'], openai_api_key)
+                        summary = get_image_summary(b64_encoded_content, node.data['filters'])
                         print(f'{node.data["name"]}: {summary}')
                         node_summary.append(summary)
                         filters.append(node.data['filters'])
 
-                path_summary = get_path_summary(node_summary, filters, openai_api_key)
+                path_summary = get_path_summary(node_summary, filters)
                 print("----fetched path summary-----")
                 print(path_summary)
                 print("----fetched path summary 123455-----")

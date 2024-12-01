@@ -4,6 +4,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
+from add_cca import find_most_changed_attributes
 from add_node import add_node_button
 from show_summary import generate_summary_button
 from streamlit_flow import streamlit_flow
@@ -12,18 +13,11 @@ from streamlit_flow.layouts import TreeLayout
 from streamlit_flow.state import StreamlitFlowState
 from utils import get_lb_data
 
-# Load .env file
-load_dotenv("./streamlit_flow/frontend/.env.local")
-lb_api_url = os.getenv("LB_FETCH_API_URL")
-bearer_token = os.getenv("BEARER_TOKEN")
-lb_id = os.getenv("LIVEBOARD_ID")
-answer_fetch_url = os.getenv("ANSWER_FETCH_API_URL")
-
 st.set_page_config("Myth demo", layout="wide")
 st.title("MYTh demo")
 
 if "lb_data" not in st.session_state:
-    response = get_lb_data(lb_api_url, bearer_token, lb_id)
+    response = get_lb_data()
         # Check if the request was successful
     if response.status_code == 200:
         # Assuming the API returns JSON data
@@ -55,6 +49,11 @@ if "curr_state" not in st.session_state:
 
 # ------ Logic to add nodes -----------
 add_node_button()
+
+
+# ------ Logic to get the most changing attributes -----------
+# find_most_changed_attributes()
+
 
 # Render the Flowchart
 st.session_state.curr_state = streamlit_flow(
