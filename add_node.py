@@ -13,10 +13,14 @@ lb_id = os.getenv("LIVEBOARD_ID")
 def add_node_button():
     # Create a dropdown selectbox with the visualization names
     visualization_map = {
-        item["visualization_name"]: item["visualization_id"] 
-        for item in st.session_state.lb_data['contents'] 
+        item["visualization_name"]: item["visualization_id"]
+        for item in st.session_state.lb_data['contents']
         if item["visualization_name"][:3] != "CCA"
-    } 
+    }
+    visualization_map_all = {
+        item["visualization_name"]: item["visualization_id"]
+        for item in st.session_state.lb_data['contents']
+    }
 
     # Select a visualization using its name
     selected_visualization_name = st.selectbox("Select a visualization", options=list(visualization_map.keys()))
@@ -25,17 +29,18 @@ def add_node_button():
     node_names = [node.data["name"] for node in st.session_state.curr_state.nodes[1:]]
 
     # Add a "None" or similar option for no selection
-    options = ["None"] + node_names
-    selected_parent = st.selectbox("Select a parent node:", options=options, index=0)
+    options = node_names
+    selected_parent = st.multiselect("Select a parent node:", options=options)
+    print(selected_parent)
 
     filters = {}
 
-    if selected_parent != "None":
+    for parent in selected_parent:
         # Get the selected data based on the selected visualization name
-        selected_data = next((item for item in st.session_state.lb_data['contents'] if item["visualization_id"] == visualization_map[selected_parent]), None)
+        selected_data = next((item for item in st.session_state.lb_data['contents'] if item["visualization_id"] == visualization_map_all[parent]), None)
 
         # Provide feedback to the user about their selection
-        st.write("Add filter!")
+        st.write(f"Add filter using {parent}!")
 
         #  Assuming you have a function to extract unique values for a given column
         def get_unique_values(content, column_name):
@@ -48,16 +53,17 @@ def add_node_button():
             
             # Display checkboxes for each column name and track selections
             for column in column_names:
-                if st.checkbox(column, key=f"{selected_visualization_name}_{column}"):
+                if st.checkbox(column, key=f"{selected_visualization_name}_{column}_{parent}"):
                     unique_values = get_unique_values(selected_data, column)
                     filters[column] = unique_values
 
     if st.button("Add Node"):
         print("Adding node!")
         new_node_id = str(f"st-flow-node_{uuid4()}")
-        if selected_parent != "None":
+
+        for parent in selected_parent:
             # Find the parent node
-            parent_node = next((node for node in st.session_state.curr_state.nodes if node.data['name'] == selected_parent), None)
+            parent_node = next((node for node in st.session_state.curr_state.nodes if node.data['name'] == parent), None)
             if parent_node:
                 # Extract filters from the parent node
                 parent_filters = parent_node.data.get('filters', {})
